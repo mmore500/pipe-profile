@@ -14,6 +14,10 @@ struct Cardinal {
 
   message_t learned_bits{};
 
+  bool send_ready{ true };
+
+  size_t half_trip_counter{};
+
 public:
 
   Cardinal(
@@ -23,7 +27,18 @@ public:
   , output( output_ )
   {}
 
-  void ProcessIncomingBits( message_t& known_bits ) {
+  void ProcessIncomingBits(
+    message_t& known_bits,
+    message_t& cur_blacklist_bits,
+    const message_t& prev_blacklist_bits
+  ) {
+
+    const auto original_known_bits = known_bits;
+
+    if ( input.Jump() ) {
+      send_ready = true;
+      ++half_trip_counter;
+    } else return;
 
     const size_t num_known_bits = known_bits.CountOnes();
 
@@ -35,17 +50,26 @@ public:
       || known_bits.CountOnes() < num_known_bits
     );
 
-    const message_t incoming_bits = input.JumpGet();
+    const message_t incoming_bits = uitsl::unset_mask(
+      input.Get(),
+      cur_blacklist_bits | prev_blacklist_bits
+    );
 
     // learned bits are incoming bits that we didn't already know about
-    learned_bits = incoming_bits & ( ~known_bits );
+    learned_bits = incoming_bits;// & ( ~known_bits );
 
     // add learned bits to known bits
     known_bits |= learned_bits;
 
+    const auto lost_bits = (original_known_bits & (~known_bits));
+
+    cur_blacklist_bits |= lost_bits;
+
   }
 
   void PushKnownBits( const message_t& known_bits ) {
+
+    if (send_ready == false) return;
 
     // remove learned bits from outgoing bits
     const message_t outgoing_bits

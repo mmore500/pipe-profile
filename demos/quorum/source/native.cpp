@@ -17,7 +17,7 @@
 
 const uitsl::MpiMultithreadGuard guard{};
 
-constexpr size_t num_threads = 1;
+constexpr size_t num_threads = 4;
 const size_t num_procs = uitsl::safe_cast<size_t>( uitsl::get_nprocs() );
 
 constexpr size_t nodes_per_job = 16;
@@ -28,10 +28,9 @@ int main() {
   if ( uitsl::is_root() ) std::cout << ">>> begin <<<" << std::endl << std::endl;
 
   netuit::Mesh<ImplSpec> mesh{
-    netuit::ToroidalTopologyFactory{}( 100 ),
-    // netuit::ToroidalTopologyFactory{}(
-    //   { std::sqrt(num_nodes), std::sqrt(num_nodes) }
-    // ),
+    netuit::ToroidalTopologyFactory{}(
+      { std::sqrt(num_nodes), std::sqrt(num_nodes) }
+    ),
     uitsl::AssignRoundRobin<uitsl::thread_id_t>{ num_threads, nodes_per_job },
     uitsl::AssignContiguously<uitsl::proc_id_t>{ num_procs, num_nodes }
   };

@@ -25,8 +25,11 @@ class Cell {
 
   message_t known_bits;
 
+  message_t cur_blacklist{};
+  message_t prev_blacklist{};
+
   void UpdateKnownBits() {
-    for (auto& cardinal : cardinals) cardinal.ProcessIncomingBits( known_bits );
+    for (auto& cardinal : cardinals) cardinal.ProcessIncomingBits( known_bits, cur_blacklist, prev_blacklist );
   }
 
   void PushKnownBits() {
@@ -83,6 +86,16 @@ public:
   }
 
   void Update() {
+
+    if (std::all_of(
+      std::begin( cardinals ),
+      std::end( cardinals ),
+      []( const auto& cardinal ){ return cardinal.half_trip_counter > 3; }
+    ) ) {
+      for ( auto& cardinal : cardinals ) cardinal.half_trip_counter = 0;
+      std::swap( cur_blacklist, prev_blacklist );
+      cur_blacklist = {};
+    }
 
     CheckOwnBits();
     CheckDistinctLearnedBits();

@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 TARGET_NAMES += consensus
 TARGET_NAMES += diffusion
+TARGET_NAMES += quorum
 TARGET_NAMES += signalgp
 
 default: test

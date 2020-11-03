@@ -56,7 +56,7 @@ public:
     );
 
     // learned bits are incoming bits that we didn't already know about
-    learned_bits = incoming_bits;// & ( ~known_bits );
+    learned_bits = incoming_bits;
 
     // add learned bits to known bits
     known_bits |= learned_bits;
@@ -75,7 +75,7 @@ public:
     const message_t outgoing_bits
       = uitsl::unset_mask( known_bits, learned_bits );
 
-    output.TryPut( outgoing_bits );
+    if ( output.TryPut( outgoing_bits ) ) send_ready = false;
 
   }
 

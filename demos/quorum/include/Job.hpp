@@ -38,6 +38,8 @@ public:
 
   void DeactivateHalf() { collection.DeactivateHalf(); }
 
+  message_t ConsolidateBits() const { return collection.ConsolidateBits(); }
+
   std::string ToString() const {
     std::stringstream ss;
     ss << "job size " << collection.GetSize() << std::endl;

@@ -51,15 +51,12 @@ public:
     );
 
     static emp::Random rand{};
-    if ( rand.P( 1.0 ) ) own_bits.Set( rand.GetUInt( own_bits.GetSize() ) );
+    if ( rand.P( 0.5 ) ) own_bits.Set( rand.GetUInt( own_bits.GetSize() ) );
 
     known_bits = own_bits;
     emp_assert( (own_bits & known_bits).CountOnes() == 1 );
 
   }
-
-  Cell & operator=(const Cell&) = delete;
-  Cell(const Cell&) = delete;
 
   void CheckDistinctLearnedBits() {
     emp_assert( uitsl::safe_equal( std::accumulate(
@@ -85,17 +82,22 @@ public:
     }
   }
 
-  void Update() {
-
+  void UpdateBlacklists() {
     if (std::all_of(
       std::begin( cardinals ),
       std::end( cardinals ),
-      []( const auto& cardinal ){ return cardinal.half_trip_counter > 3; }
+      []( const auto& cardinal ){ return cardinal.half_trip_counter >= 2; }
     ) ) {
       for ( auto& cardinal : cardinals ) cardinal.half_trip_counter = 0;
-      std::swap( cur_blacklist, prev_blacklist );
-      cur_blacklist = {};
+      prev_blacklist = std::exchange( cur_blacklist, message_t{} );
     }
+  }
+
+  void Update() {
+
+    known_bits |= own_bits;
+
+    UpdateBlacklists();
 
     CheckOwnBits();
     CheckDistinctLearnedBits();
@@ -127,5 +129,7 @@ public:
   size_t GetNumMessagesReceived() const { return received_message_counter; }
 
   size_t GetNumKnownBits() const { return known_bits.CountOnes(); };
+
+  message_t GetOwnBits() const { return own_bits; };
 
 };

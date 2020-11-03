@@ -1,5 +1,6 @@
 #pragma once
 
+#include <numeric>
 #include <sstream>
 #include <string>
 
@@ -55,6 +56,17 @@ public:
       std::begin( cells ) + cells.size() / 2,
       std::end( cells ),
       []( auto& cell ){ cell->Deactivate(); }
+    );
+  }
+
+  message_t ConsolidateBits() const {
+    return std::accumulate(
+      std::begin( cells ),
+      std::end( cells ),
+      message_t{},
+      []( message_t cumulator, const auto& cell ){
+        return cell->GetOwnBits() | cumulator;
+      }
     );
   }
 

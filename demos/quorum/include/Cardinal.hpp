@@ -45,11 +45,6 @@ public:
     // remove learned bits from known bits
     known_bits = uitsl::unset_mask(known_bits, learned_bits);
 
-    emp_assert(
-      learned_bits.CountOnes() == 0
-      || known_bits.CountOnes() < num_known_bits
-    );
-
     const message_t incoming_bits = uitsl::unset_mask(
       input.Get(),
       cur_blacklist_bits | prev_blacklist_bits

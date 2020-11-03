@@ -53,33 +53,6 @@ public:
     static emp::Random rand{};
     if ( rand.P( 0.5 ) ) own_bits.Set( rand.GetUInt( own_bits.GetSize() ) );
 
-    known_bits = own_bits;
-    emp_assert( (own_bits & known_bits).CountOnes() == 1 );
-
-  }
-
-  void CheckDistinctLearnedBits() {
-    emp_assert( uitsl::safe_equal( std::accumulate(
-      std::begin(cardinals),
-      std::end(cardinals),
-      message_t{},
-      [](const auto& message, const auto& c2){
-        return message | c2.learned_bits;
-      }
-    ).CountOnes(), std::accumulate(
-      std::begin(cardinals),
-      std::end(cardinals),
-      0,
-      [](const auto& count, const auto& c2){
-        return count + c2.learned_bits.CountOnes();
-      }
-    ) ) );
-  }
-
-  void CheckOwnBits() {
-    if ( own_bits.CountOnes() ) {
-      emp_assert( (own_bits & known_bits).CountOnes() == 1 );
-    }
   }
 
   void UpdateBlacklists() {
@@ -99,18 +72,9 @@ public:
 
     UpdateBlacklists();
 
-    CheckOwnBits();
-    CheckDistinctLearnedBits();
-
     UpdateKnownBits();
 
-    CheckOwnBits();
-    CheckDistinctLearnedBits();
-
     PushKnownBits();
-
-    CheckOwnBits();
-    CheckDistinctLearnedBits();
 
   }
 

@@ -59,6 +59,14 @@ public:
     );
   }
 
+  void ActivateHalf() {
+    std::for_each(
+      std::begin( cells ) + cells.size() / 2,
+      std::end( cells ),
+      []( auto& cell ){ cell->Activate(); }
+    );
+  }
+
   message_t ConsolidateBits() const {
     return std::accumulate(
       std::begin( cells ),

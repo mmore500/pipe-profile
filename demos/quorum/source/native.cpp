@@ -1,6 +1,7 @@
 #include <chrono>
 #include <iostream>
 #include <map>
+#include <numeric>
 #include <sstream>
 
 #include "netuit/assign/AssignAvailableProcs.hpp"
@@ -31,7 +32,7 @@ int main() {
     netuit::ToroidalTopologyFactory{}(
       { std::sqrt(num_nodes), std::sqrt(num_nodes) }
     ),
-    uitsl::AssignRoundRobin<uitsl::thread_id_t>{ num_threads, nodes_per_job },
+    uitsl::AssignContiguously<uitsl::thread_id_t>{ num_threads, nodes_per_job },
     uitsl::AssignContiguously<uitsl::proc_id_t>{ num_procs, num_nodes }
   };
 
@@ -63,6 +64,14 @@ int main() {
       ss << "thread " << thread << std::endl;
       ss << job.ToString() << std::endl;
 
+      job.ActivateHalf();
+
+      job.Run();
+
+      ss << "process " << uitsl::get_proc_id() << std::endl;
+      ss << "thread " << thread << std::endl;
+      ss << job.ToString() << std::endl;
+
 
       printouts[thread] = ss.str();
 
@@ -82,22 +91,34 @@ int main() {
 
   uitsl::do_successively(
     [&](){
-      message_t cumul;
-      for (const auto& [k, v] : std::map{
-        std::begin(bits_before), std::end(bits_before)
-      }) cumul |= v;
-      std::cout << "num unique bits before: " << cumul.CountOnes() << std::endl;
+      message_t cumulated = std::accumulate(
+        std::begin( bits_before ),
+        std::end( bits_before ),
+        message_t{},
+        []( const auto& cumulator, const auto& pair ) {
+          const auto& [k, v] = pair;
+          return cumulator | v;
+        }
+      );
+      std::cout << "num unique bits before: ";
+      std::cout << cumulated.CountOnes() << std::endl;
     },
     uitsl::print_separator
   );
 
   uitsl::do_successively(
     [&](){
-      message_t cumul;
-      for (const auto& [k, v] : std::map{
-        std::begin(bits_after), std::end(bits_after)
-      }) cumul |= v;
-      std::cout << "num unique bits after: " << cumul.CountOnes() << std::endl;
+      message_t cumulated = std::accumulate(
+        std::begin( bits_after ),
+        std::end( bits_after ),
+        message_t{},
+        []( const auto& cumulator, const auto& pair ) {
+          const auto& [k, v] = pair;
+          return cumulator | v;
+        }
+      );
+      std::cout << "num unique bits before: ";
+      std::cout << cumulated.CountOnes() << std::endl;
     },
     uitsl::print_separator
   );

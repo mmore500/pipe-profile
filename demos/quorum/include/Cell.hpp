@@ -28,12 +28,31 @@ class Cell {
   message_t cur_blacklist{};
   message_t prev_blacklist{};
 
+  bool activated{ true };
+
   void UpdateKnownBits() {
-    for (auto& cardinal : cardinals) cardinal.ProcessIncomingBits( known_bits, cur_blacklist, prev_blacklist );
+    if (activated) {
+      for (auto& cardinal : cardinals) cardinal.ProcessIncomingBits(
+        known_bits,
+        cur_blacklist,
+        prev_blacklist
+      );
+    } else {
+      message_t dummy;
+      for (auto& cardinal : cardinals) cardinal.ProcessIncomingBits(
+        dummy,
+        dummy,
+        dummy
+      );
+    }
   }
 
   void PushKnownBits() {
-    for (auto& cardinal : cardinals) cardinal.PushKnownBits( known_bits );
+    if (activated) {
+      for (auto& cardinal : cardinals) cardinal.PushKnownBits( known_bits );
+    } else {
+      for (auto& cardinal : cardinals) cardinal.PushKnownBits( message_t{} );
+    }
   }
 
 public:
@@ -79,14 +98,11 @@ public:
   }
 
   void Deactivate() {
-    const size_t num_known_bits = known_bits.CountOnes();
-    known_bits = uitsl::unset_mask( known_bits, own_bits );
-    emp_assert(
-      own_bits.CountOnes() == 0
-      || known_bits.CountOnes() < num_known_bits
-    );
-    own_bits.Clear();
+    activated = false;
+    known_bits = {};
   }
+
+  void Activate() { activated = true; }
 
   size_t GetNumMessagesSent() const { return sent_message_counter; }
 
@@ -94,6 +110,6 @@ public:
 
   size_t GetNumKnownBits() const { return known_bits.CountOnes(); };
 
-  message_t GetOwnBits() const { return own_bits; };
+  message_t GetOwnBits() const { return activated ? own_bits : message_t{}; };
 
 };

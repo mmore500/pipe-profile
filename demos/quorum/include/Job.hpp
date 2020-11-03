@@ -38,6 +38,8 @@ public:
 
   void DeactivateHalf() { collection.DeactivateHalf(); }
 
+  void ActivateHalf() { collection.ActivateHalf(); }
+
   message_t ConsolidateBits() const { return collection.ConsolidateBits(); }
 
   std::string ToString() const {

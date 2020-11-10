@@ -116,9 +116,6 @@ class Mesh {
       uitsl::sidebyside_hash<std::ratio<3, 4>>(mesh_id, input.GetEdgeID())
     );
 
-    // assert that generated tags are unique
-    emp_assert( tag_checker.insert(tag).second );
-
     const uit::InterProcAddress addr{
       outlet_proc_id,
       inlet_proc_id,
@@ -128,9 +125,13 @@ class Mesh {
       comm
     };
 
-    if (inlet_proc_id != outlet_proc_id) input.template SplitDuct<
-      typename ImplSpec::ProcOutletDuct
-    >(addr, back_end);
+    if (inlet_proc_id != outlet_proc_id) {
+      input.template SplitDuct<
+        typename ImplSpec::ProcOutletDuct
+      >(addr, back_end);
+      // assert that generated tags are unique
+      emp_assert( tag_checker.insert(tag).second );
+    }
 
   }
 

@@ -26,6 +26,12 @@ public:
    * Access value by index at compile time.
    */
   template<size_t Query>
+  constexpr T& GetByIndex() { return data.at(Query); }
+
+  /*
+   * Access value by index at compile time.
+   */
+  template<size_t Query>
   constexpr T& Get() { return data.at(Query); }
 
   /*

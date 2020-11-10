@@ -32,6 +32,22 @@ public:
    * Get leaf by index.
    */
   template<size_t RemainingSteps, size_t ChildIndex=0>
+  constexpr auto& GetByIndex() {
+
+    using Child = typename std::tuple_element<ChildIndex, parent_t>::type;
+    constexpr size_t ChildSteps = Child::GetSize();
+
+    if constexpr ( RemainingSteps < ChildSteps ) {
+        return std::get<ChildIndex>(*this).template
+          GetByIndex<RemainingSteps>();
+    } else return GetByIndex<RemainingSteps - ChildSteps, ChildIndex + 1>();
+
+  }
+
+  /*
+   * Get leaf by index.
+   */
+  template<size_t RemainingSteps, size_t ChildIndex=0>
   constexpr auto& Get() {
 
     using Child = typename std::tuple_element<ChildIndex, parent_t>::type;

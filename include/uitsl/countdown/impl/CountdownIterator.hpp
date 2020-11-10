@@ -2,22 +2,19 @@
 #ifndef UITSL_COUNTDOWN_IMPL_COUNTDOWNITERATOR_HPP_INCLUDE
 #define UITSL_COUNTDOWN_IMPL_COUNTDOWNITERATOR_HPP_INCLUDE
 
-#include <experimental/memory>
-
 namespace uitsl {
 
 template<typename CountdownType>
 class CountdownIterator {
 
-  std::experimental::observer_ptr<CountdownType> impl;
+  // non-owning pointer
+  CountdownType* impl;
 
 public:
 
   CountdownIterator() = default;
 
-  explicit CountdownIterator(CountdownType& countdown) {
-    impl = std::experimental::make_observer( &countdown );
-  }
+  explicit CountdownIterator(CountdownType& countdown) : impl( &countdown ) {}
 
   bool operator!=(const CountdownIterator other) {
     return ! impl->IsComplete();

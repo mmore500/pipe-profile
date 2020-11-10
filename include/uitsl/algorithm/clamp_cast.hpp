@@ -14,22 +14,12 @@ template<typename To, typename From>
 To clamp_cast( const From from ) {
 
 
-  #ifndef __EMSCRIPTEN__
-  constexpr
-  #else
-  const
-  #endif
-  double lower_bound = static_cast<double>( std::nexttoward(
+  const double lower_bound = static_cast<double>( std::nexttoward(
     std::numeric_limits<To>::min(), std::numeric_limits<double>::infinity()
   ) );
 
 
-  #ifndef __EMSCRIPTEN__
-  constexpr
-  #else
-  const
-  #endif
-  double upper_bound = static_cast<double>( std::nexttoward(
+  const double upper_bound = static_cast<double>( std::nexttoward(
     std::numeric_limits<To>::max(), -std::numeric_limits<double>::infinity()
   ) );
 

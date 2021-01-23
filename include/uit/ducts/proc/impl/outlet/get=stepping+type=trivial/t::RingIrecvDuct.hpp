@@ -151,8 +151,8 @@ public:
   }
 
   ~RingIrecvDuct() {
-    while ( CountUnconsumedGets() ) TryConsumeGets( CountUnconsumedGets() );
-    CancelOpenReceiveRequests();
+    //while ( CountUnconsumedGets() ) TryConsumeGets( CountUnconsumedGets() );
+    //CancelOpenReceiveRequests();
   }
 
   [[noreturn]] bool TryPut(const T&) const {

@@ -75,14 +75,18 @@ int main(int argc, char* argv[]) {
   );
   team.Join();
 
-  uitsl::do_successively(
-    [&](){
-      for (const auto& [k, v] : std::map{ std::begin(res), std::end(res) }) {
-        std::cout << v;
-      }
-    },
-    uitsl::print_separator
-  );
+  std::cout << "afterjoin" << uitsl::get_proc_id() << std::endl;
+
+  UITSL_Barrier( MPI_COMM_WORLD );
+
+  //uitsl::do_successively(
+  //  [&](){
+  //    for (const auto& [k, v] : std::map{ std::begin(res), std::end(res) }) {
+  //      std::cout << v;
+  //    }
+  //  },
+  //  uitsl::print_separator
+  //);
 
   return 0;
 }

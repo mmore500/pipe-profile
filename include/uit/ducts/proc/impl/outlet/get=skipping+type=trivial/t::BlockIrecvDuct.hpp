@@ -147,8 +147,8 @@ public:
   }
 
   ~BlockIrecvDuct() {
-    FlushReceives();
-    CancelAllReceiveRequests();
+    //FlushReceives();
+    //CancelAllReceiveRequests();
     emp_assert( std::all_of(
       std::begin(receive_requests),
       std::end(receive_requests),

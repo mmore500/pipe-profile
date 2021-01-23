@@ -9,7 +9,7 @@ CFLAGS_all := -Wall -Wno-unused-function -std=c++17 -I$(TO_ROOT)/include/ -Iincl
 
 # Native compiler information
 UIT_MPICXX ?= mpicxx.mpich
-CFLAGS_nat := -O3 -DNDEBUG -march=native $(CFLAGS_all)
+CFLAGS_nat := -g -O3 -DNDEBUG -march=native $(CFLAGS_all)
 CFLAGS_nat_debug := -g $(CFLAGS_all)
 
 # Emscripten compiler information
